@@ -1,0 +1,17 @@
+section
+    table(class='striped bordered')
+        thead
+            tr
+                th Node
+                th Created at
+                th Topic
+                th Message
+
+        tbody
+            tr(ng-repeat='message in logs.messages')
+                td {{ message.node }}
+                td
+                    time(ng-attr-title="{{ message.createdAt | amDateFormat:'' }}" am-time-ago='message.createdAt')
+                td
+                    span(ng-attr-title="{{ message.topic }}") {{ message.topic.replace('/nodes/' + message.node, '..') }}
+                td {{ message.message }}
