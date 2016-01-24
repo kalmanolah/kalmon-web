@@ -6,9 +6,13 @@ if Meteor.isClient
 
     angular
         .module 'kalmon-web', [
+            'ngAnimate',
+            'ngAria',
+            'ngMaterial',
             'angular-meteor',
             'ui.router',
-            'angularMoment'
+            'angularMoment',
+            'data-table',
         ]
         .config [
             '$urlRouterProvider',
@@ -40,17 +44,43 @@ if Meteor.isClient
         ]
         .controller 'HomeCtrl', [
             '$scope',
-            ($scope) ->
-                @applicationName = 'Kalmon'
+            '$mdSidenav',
+            '$state',
+            ($scope, $mdSidenav, $state) ->
+                @ctrlName = 'HomeCtrl'
+                $scope.applicationName = 'Kalmon'
 
-                $('.button-collapse')
-                    .sideNav()
+                $scope.toggleSidenav = (target) ->
+                    $mdSidenav(target).toggle()
+
+                $scope.goto = (state, stateParams = {}) ->
+                    $state.go state, stateParams
+
+                $scope.navigationItems = [
+                        state: 'home',
+                        icon: 'home',
+                        label: 'Home'
+                    ,
+                        state: 'nodes',
+                        icon: 'devices_other',
+                        label: 'Nodes'
+                    ,
+                        state: 'logs',
+                        icon: 'list',
+                        label: 'Logs'
+                ]
         ]
         .controller 'LogsCtrl', [
             '$scope',
             '$reactive',
             ($scope, $reactive) ->
+                @ctrlName = 'LogsCtrl'
                 $reactive(@).attach $scope
+
+                @options =
+                    columnMode: 'flex'
+                    headerHeight: 44
+                    # footerHeight: false
 
                 @helpers
                     messages: () ->
@@ -63,6 +93,7 @@ if Meteor.isClient
             '$scope',
             '$reactive',
             ($scope, $reactive) ->
+                @ctrlName = 'NodesCtrl'
                 $reactive(@).attach $scope
                 @selected = null
 

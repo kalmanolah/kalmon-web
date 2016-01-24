@@ -1,17 +1,8 @@
-section
-    table(class='striped bordered')
-        thead
-            tr
-                th Node
-                th Created at
-                th Topic
-                th Message
-
-        tbody
-            tr(ng-repeat='message in logs.messages')
-                td {{ message.node }}
-                td
-                    time(ng-attr-title="{{ message.createdAt | amDateFormat:'' }}" am-time-ago='message.createdAt')
-                td
-                    span(ng-attr-title="{{ message.topic }}") {{ message.topic.replace('/nodes/' + message.node, '..') }}
-                td {{ message.message }}
+div(layout='column')
+    dtable(rows="logs.messages" options="logs.options" class="material" flex="grow")
+        column(name="Node" prop="node" flex-grow="1")
+        column(name="Created at" prop="createdAt" flex-grow='1')
+            time(ng-attr-title="{{ $row.createdAt | amDateFormat:'' }}" am-time-ago='$row.createdAt')
+        column(name="Topic" prop="topic" flex-grow="1")
+            span(ng-attr-title="{{ $row.topic }}") {{ $row.topic.replace('/nodes/' + $row.node, '..') }}
+        column(name="Message" prop="message" flex-grow="2")

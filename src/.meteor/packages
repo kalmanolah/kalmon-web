@@ -19,9 +19,11 @@ insecure                # Allow all DB writes from clients (for prototyping)
 coffeescript
 angular
 angularui:angular-ui-router
-materialize:materialize
 civilframe:angular-jade
 msavin:mongol
 mkarliner:mqtt
 jasonaibrahim:angular-moment
 meteorhacks:aggregate
+angular:angular-material
+less
+mquandalle:bower

@@ -1,0 +1,10 @@
+//-md-is-locked-open='$mdMedia("gt-md")'
+md-sidenav(class='md-sidenav-left md-whiteframe-z2' md-component-id='left')
+  div(ng-controller='HomeCtrl as home')
+    md-content(flex role='navigation')
+      md-list
+        md-subheader Navigation
+
+        md-list-item(ng-repeat="v in navigationItems" ng-click="goto(v.state)")
+          md-icon {{ v.icon }}
+          p {{ v.label }}

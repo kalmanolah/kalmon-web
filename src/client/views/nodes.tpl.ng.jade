@@ -1,11 +1,10 @@
-div(class='row')
-    div(class='col s12 m4 l3')
-        div(class='collection')
-            li(ng-click='nodes.selected = node' ng-class="{active: (nodes.selected._id==node._id)}" ng-repeat='node in nodes.nodes' class='collection-item')
-                strong(class='title') {{ node._id }}
-                br
-                i Seen
-                    time(ng-attr-title="{{ node.updatedAt | amDateFormat:'' }}" am-time-ago='node.updatedAt')
+div(layout='column' layout-gt-xs='row')
+    md-list(flex flex-gt-xs='30' flex-gt-sm='20')
+        md-list-item(ng-click='nodes.selected = node' class='md-2-line' ng-class="{active: (nodes.selected._id==node._id)}" ng-repeat="node in nodes.nodes")
+            div(class='md-list-item-text')
+                h3 {{ node._id }}
+                p Seen
+                    time(ng-attr-title="{{ node.updatedAt | amDateFormat:'' }}" am-time-ago="node.updatedAt")
 
-    div(class='col s12 m8 l9')
-        h1 {{ nodes.selected._id }}
+    md-content(flex flex-gt-xs='70' flex-gt-sm='80')
+        h2 {{ nodes.selected._id }}

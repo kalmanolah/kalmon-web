@@ -1,0 +1,8 @@
+{
+  "name": "kalmon-web",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular-data-table": "*"
+  },
+  "private": true
+}

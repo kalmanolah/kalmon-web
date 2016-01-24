@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<body ng-app="kalmon-web">
-    <ng-include src="'client/views/navigation.tpl.html'"></ng-include>
+<body ng-app="kalmon-web" layout="row" ng-controller='HomeCtrl'>
+    <ng-include src="'client/views/navigation-side.tpl.html'"></ng-include>
 
-    <div class="">
-        <div ui-view></div>
-    </div>
+    <section role="main" layout="column" flex>
+        <ng-include src="'client/views/navigation-top.tpl.html'"></ng-include>
+        <md-content flex layout-padding ui-view></md-content>
+    </section>
 </body>
