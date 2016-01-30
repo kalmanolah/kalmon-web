@@ -1,0 +1,24 @@
+md-dialog(ng-cloak aria-label="Edit value")
+  form
+    md-toolbar
+      div(class='md-toolbar-tools')
+        h2 Edit value
+        span(flex)
+        md-button(class='md-icon-button' ng-click='cancel()')
+          md-icon close
+
+    md-dialog-content
+      div(class='md-dialog-content')
+        md-input-container
+          div(ng-if="entry.type == 'string' || entry.type == 'number'")
+            label {{ entry.label || entry.key }}
+            input(ng-model="entry.value" type="text" ng-if="entry.type == 'string'")
+            input(ng-model="entry.value" type="number" ng-if="entry.type == 'number'")
+
+          div(ng-if="entry.type == 'boolean'")
+            md-checkbox(ng-model="entry.value") {{ entry.label || entry.key }}
+
+    md-dialog-actions(layout='row')
+      span(flex)
+      md-button(ng-click="cancel()") Cancel
+      md-button(ng-click="submit()") Save

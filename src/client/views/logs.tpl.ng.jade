@@ -5,4 +5,9 @@ div(layout='column')
             time(ng-attr-title="{{ $row.createdAt | amDateFormat:'' }}" am-time-ago='$row.createdAt')
         column(name="Topic" prop="topic" flex-grow="1")
             span(ng-attr-title="{{ $row.topic }}") {{ $row.topic.replace('/nodes/' + $row.node, '..') }}
+        column(name="Type" prop="type" flew-grow="1")
+            span(ng-attr-title="{{ $row.type }}")
+                md-icon(ng-if='$row.type == "unknown"') help_outline
+                md-icon(ng-if='$row.type == "command"') forward
+                md-icon(ng-if='$row.type == "response"') reply
         column(name="Message" prop="message" flex-grow="2")

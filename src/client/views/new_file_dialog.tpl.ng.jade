@@ -1,0 +1,27 @@
+md-dialog(ng-cloak aria-label="New file")
+  form(ng-submit='submit()')
+    md-toolbar
+      div(class='md-toolbar-tools')
+        h2 New file
+        span(flex)
+        md-button(class='md-icon-button' ng-click='cancel()')
+          md-icon close
+
+    md-dialog-content
+      div(class='md-dialog-content' layout='column')
+        md-input-container
+          label File
+          input(ng-model='file.file' type='text' required)
+
+        md-input-container
+          label Url
+          input(ng-model='file.url' type="url" ng-required='!file.content')
+
+        md-input-container
+          label Content
+          textarea(ng-model='file.content' ng-required='!file.url' cols='60')
+
+    md-dialog-actions(layout='row')
+      span(flex)
+      md-button(ng-click="cancel()") Cancel
+      md-button(type="submit") Save

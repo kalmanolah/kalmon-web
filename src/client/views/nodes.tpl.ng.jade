@@ -3,8 +3,70 @@ div(layout='column' layout-gt-xs='row')
         md-list-item(ng-click='nodes.selected = node' class='md-2-line' ng-class="{active: (nodes.selected._id==node._id)}" ng-repeat="node in nodes.nodes")
             div(class='md-list-item-text')
                 h3 {{ node._id }}
-                p Seen
+                p Activity
                     time(ng-attr-title="{{ node.updatedAt | amDateFormat:'' }}" am-time-ago="node.updatedAt")
 
-    md-content(flex flex-gt-xs='70' flex-gt-sm='80')
-        h2 {{ nodes.selected._id }}
+    div(flex flex-gt-xs='70' flex-gt-sm='80' layout-padding)
+        md-content
+            div(class='md-whiteframe-z1' ng-if='nodes.selected._id')
+                md-toolbar
+                    div(class='md-toolbar-tools')
+                        h3 {{ nodes.selected._id }}
+
+                section
+                    md-subheader Info
+                    md-content(layout-padding)
+                        table
+                            tr
+                                th(class='text-left') Node
+                                td {{ nodes.selected._id }}
+                            tr
+                                th(class='text-left') Last activity
+                                td
+                                    time(ng-attr-title="{{ nodes.selected.updatedAt | amDateFormat:'' }}" am-time-ago="nodes.selected.updatedAt")
+                            tr
+                                th(class='text-left') Last info update
+                                td
+                                    time(ng-attr-title="{{ nodes.selected.infoUpdatedAt | amDateFormat:'' }}" am-time-ago="nodes.selected.infoUpdatedAt")
+
+                md-divider
+
+                section
+                    md-subheader Commands
+                    md-content(layout-padding)
+                        md-button(class='md-raised' ng-click='nodes.sendCommand("info")')
+                            md-icon refresh
+                            | &nbsp;Refresh
+                        md-button(class='md-raised' ng-click='nodes.sendCommand("restart")')
+                            md-icon power_settings_new
+                            | &nbsp;Restart
+                        md-button(class='md-raised' ng-click='nodes.uploadFile()')
+                            md-icon cloud_upload
+                            | &nbsp;Upload file
+
+                md-divider
+
+                section
+                    md-subheader Configuration
+                    md-content(layout-padding)
+                        div
+                            dtable(ng-if="nodes.selected.configuration" options="nodes.dtableOptions.configuration" rows="nodes.selected.configuration" class="material dt" flex="grow")
+                                column(name="Key" prop="key" sort="asc" flex-grow="2")
+                                column(name="Type", prop="type", flex-grow="1")
+                                column(name="Value", prop="value", flex-grow="1")
+                                column(name="Actions" flex-grow="1")
+                                    a(ng-click='nodes.editConfigurationEntry($row)')
+                                        md-icon edit
+
+                md-divider
+
+                section
+                    md-subheader Files
+                    md-content(layout-padding)
+                        div
+                            dtable(ng-if="nodes.selected.files" options="nodes.dtableOptions.files" rows="nodes.selected.files" class="material dt" flex="grow")
+                                column(name="Name" prop="name" sort="asc" flex-grow="2")
+                                column(name="Size", prop="size", flex-grow="1") {{ $row.size | byteFmt: 2 }}
+                                column(name="Actions" flex-grow="1")
+                                    a(ng-click='nodes.removeFile($row.name)')
+                                        md-icon delete
