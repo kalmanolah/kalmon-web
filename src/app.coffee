@@ -220,13 +220,25 @@ if Meteor.isServer
     toType = (obj) ->
         return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
 
+    getSetting = (key, def = null) ->
+        setting = Meteor.settings[key]
+
+        if (setting != null) and (setting != undefined)
+            return setting
+
+        return def
+
     sendNodeCommand = (node, type, data = {}) ->
+        console.log "Sending command of type #{type} to node #{node}"
+
         data = JSON.stringify data
         mq.publish "/nodes/#{node}/commands/#{type}", data
 
         return 'OK'
 
     updateNodeList = () ->
+        console.log "Updating node list"
+
         Messages
             .aggregate [
                 {
@@ -249,6 +261,8 @@ if Meteor.isServer
                             updatedAt: node.updatedAt
 
     updateNodeInfo = (nodeId) ->
+        console.log "Updating info for node #{nodeId}"
+
         Nodes
             .upsert
                 _id: nodeId
@@ -303,6 +317,57 @@ if Meteor.isServer
                 _id: nodeId
             , node
 
+    initializeMqtt = () ->
+        if mq
+            mq.end false, () ->
+                console.log "MQTT client disconnected"
+            mq = null
+
+        console.log "Initializing MQTT subscriber"
+        mqConnectionString = getSetting 'mqttConnectionString'
+
+        if !mqConnectionString
+            console.log "MQTT connection string missing, not connecting"
+            return
+
+        # 'mqtt://espnode:espnode@192.168.178.46:8889'
+        mq = mqtt.connect mqConnectionString
+        mq.subscribe '/nodes/#'
+        mq.on 'message', Meteor.bindEnvironment (topic, message) ->
+            console.log "Received a message on topic #{topic}"
+
+            matches = /^\/nodes\/([^\/]+)(\/.*)$/.exec topic
+            node = if matches then matches[1] else null
+            topicPart = if matches.length >= 3 then matches[2] else null
+            body = message.toString()
+            data = null
+
+            try
+                data = JSON.parse body
+
+            message =
+                createdAt: new Date(),
+                topic: topic,
+                message: body,
+                data: data,
+                node: node,
+                type: 'unknown'
+
+            if topicPart
+                if matches = /^\/commands\/(.+)$/.exec topicPart
+                    message.type = 'command'
+                    message.command = matches[1]
+
+                else if matches = /^\/responses\/(.+)$/.exec topicPart
+                    message.type = 'response'
+                    message.response = matches[1]
+
+            Messages
+                .insert message
+
+            if node
+                updateNodeInfo(node)
+
     Meteor
         .startup () ->
             console.log 'Starting server'
@@ -310,44 +375,8 @@ if Meteor.isServer
             console.log 'Create capped Messages collection'
             Messages._createCappedCollection 5242880, 5000
 
-            console.log 'Updating node list'
             updateNodeList()
-
-            console.log 'Initializing MQTT subscriber'
-            mq = mqtt.connect 'mqtt://espnode:espnode@192.168.178.46:8889'
-            mq.subscribe '/nodes/#'
-            mq.on 'message', Meteor.bindEnvironment (topic, message) ->
-                matches = /^\/nodes\/([^\/]+)(\/.*)$/.exec topic
-                node = if matches then matches[1] else null
-                topicPart = if matches.length >= 3 then matches[2] else null
-                body = message.toString()
-                data = null
-
-                try
-                    data = JSON.parse body
-
-                message =
-                    createdAt: new Date(),
-                    topic: topic,
-                    message: body,
-                    data: data,
-                    node: node,
-                    type: 'unknown'
-
-                if topicPart
-                    if matches = /^\/commands\/(.+)$/.exec topicPart
-                        message.type = 'command'
-                        message.command = matches[1]
-
-                    else if matches = /^\/responses\/(.+)$/.exec topicPart
-                        message.type = 'response'
-                        message.response = matches[1]
-
-                Messages
-                    .insert message
-
-                if node
-                    updateNodeInfo(node)
+            initializeMqtt()
 
             console.log 'Defining client methods'
             Meteor
