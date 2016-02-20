@@ -280,7 +280,7 @@ if Meteor.isServer
         infoMessageQuery =
             node: node._id
             type: 'response'
-            response: 'info'
+            response: 'commands/info'
 
         if node.infoMessageId and node.infoUpdatedAt
             infoMessageQuery._id =
@@ -354,13 +354,12 @@ if Meteor.isServer
                 type: 'unknown'
 
             if topicPart
-                if matches = /^\/commands\/(.+)$/.exec topicPart
-                    message.type = 'command'
-                    message.command = matches[1]
-
-                else if matches = /^\/responses\/(.+)$/.exec topicPart
+                if matches = /^\/responses\/(.+)$/.exec topicPart
                     message.type = 'response'
                     message.response = matches[1]
+                else if matches = /^\/commands\/(.+)$/.exec topicPart
+                    message.type = 'command'
+                    message.command = matches[1]
 
             Messages
                 .insert message
